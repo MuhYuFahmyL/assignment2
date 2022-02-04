@@ -18,7 +18,7 @@
             background-color: #ceddf5;
         }
         .visibleForm{
-          visibility: hidden;
+          display: none;
         }
     </style>
   </head>
@@ -146,10 +146,38 @@
                   <input type="email" class="form-control" id="inputEmail" aria-describedby="emailUser" placeholder="Please Input Email">
                   <div id="emailUser" class="form-text">We'll never share your email with anyone else.</div>
                 </div>
+                <div class="mb-3">
+                  <label for="inputGender" class="form-label">Gender</label>
+                  <input type="text" class="form-control" id="inputGender" placeholder="Please Input female/male">
+                </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
               </form>
         </div>
       </div>
+      <div class="container">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Nama</th>
+              <th scope="col">Email</th>
+              <th scope="col">Phone</th>
+              <th scope="col">Country</th>
+            </tr>
+          </thead>
+          <tbody id="tableGetData">
+          </tbody>
+        </table>
+      </div>
+
+      <div class="container album py-5">
+        <div class="container">
+
+          <div class="row" id="cardMap">
+            
+          </div>
+        </div>
+      </div>
+
 
     </main>
 
@@ -169,6 +197,36 @@
             document.getElementById('form-input-data-user').classList.remove("visibleForm");
         }
 
+        function loadFetch(gender){
+            document.getElementById('tableGetData').innerHTML = null;
+            document.getElementById('cardMap').innerHTML = null;
+            fetch("https://randomuser.me/api/?&results="+Math.floor(Math.random() * 10)+"&gender="+gender)
+            .then(response => response.json())
+            .then((data) => {
+                console.log(data.results)
+                data.results.map(x=>{
+                  var tLoad = "<tr><td>"+ x.name.title + " " + x.name.first + " " + x.name.last +"</td><td>"+ x.email +"</td><td>"+ x.phone +"</td><td>"+ x.location.country +"</td></tr>";
+                  var dataElement = '<div class="col-md-4">'+
+                    '<div class="card mb-4 box-shadow">'+
+                      '<img class="card-img-top" src="'+ x.picture.medium +'" alt="Thumbnail [100%x225]" style="height: 225px; width: 100%; display: block;" data-holder-rendered="true">'+
+                      '<div class="card-body">'+
+                        '<h5 class="card-title" style="font-weight: bold;">'+ x.name.title + " " + x.name.first + " " + x.name.last +'</h5>'+
+                        '<p class="card-text">'+ x.location.country +' - '+ x.phone +'</p>'+
+                        '<div class="d-flex justify-content-between align-items-center">'+
+                          '<div class="btn-group">'+
+                            '<button type="button" class="btn btn-primary">Lihat</button>'+
+                          '</div>'+
+                        '</div>'+
+                      '</div>'+
+                    '</div>'+
+                  '</div>';
+                  document.getElementById('cardMap').insertAdjacentHTML('beforeend',dataElement);
+                  document.getElementById('tableGetData').insertAdjacentHTML('beforeend',tLoad);
+                });
+            })
+            .catch(err => console.log(err))
+        }
+
         function tampilkanData(name="",role="",availability="",age="",lokasi="",experience="",email=""){
           document.getElementById("namaFE").innerHTML = name;
           document.getElementById("roleFE").innerHTML = role;
@@ -177,6 +235,7 @@
           document.getElementById("lokasiFE").innerHTML = lokasi;
           document.getElementById("pengalamanFE").innerHTML = experience;
           document.getElementById("emailFE").innerHTML = email
+          
           hideForm();
         }
 
@@ -188,7 +247,9 @@
           var lokasi = document.getElementById("inputLokasi").value;
           var experience = document.getElementById("inputExperience").value;
           var email = document.getElementById("inputEmail").value;
+          var gender = document.getElementById("inputGender").value;
           tampilkanData(name,role,availability,age,lokasi,experience,email)
+          loadFetch(gender)
         }
     </script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
